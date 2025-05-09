@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Damage : MonoBehaviour
@@ -8,7 +9,7 @@ public class Damage : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        StartCoroutine(DeleteAfterTime());
     }
 
     // Update is called once per frame
@@ -28,5 +29,10 @@ public class Damage : MonoBehaviour
             playerHealth.TakeDamage(damage);
             
         }
+    }
+
+    private IEnumerator DeleteAfterTime(){
+        yield return new WaitForSeconds(20);
+        Destroy(gameObject);
     }
 }
