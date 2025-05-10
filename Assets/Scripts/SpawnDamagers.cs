@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpawnDamagers : MonoBehaviour
 {
@@ -33,6 +34,7 @@ public class SpawnDamagers : MonoBehaviour
 
             newObject.name = "DamageStick Copy #" + i;
             i++;
+            
 
         }
     }
