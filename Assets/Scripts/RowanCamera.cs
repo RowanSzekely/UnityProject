@@ -2,7 +2,11 @@ using UnityEngine;
 
 public class RowanCamera : MonoBehaviour
 {
-    public Vector3 offsetFromTarget_cam;
+    public float radiusFromTarget;
+
+    public float heightToTopRing;
+
+    public float heightToBotRing;
 
     
     public Transform target;
@@ -12,7 +16,9 @@ public class RowanCamera : MonoBehaviour
     private Vector2 cameraInput;
 
 
-    private float pitchRot;
+    private float _height;
+
+    private float _yawRot;
 
     private ICameraPosable poseableTarget;
 
@@ -33,22 +39,33 @@ public class RowanCamera : MonoBehaviour
     
     private void _CollectInput()
     {
-        cameraInput = new Vector2(Input.GetAxis("Mouse X"), 0f /* Input.GetAxis("Mouse Y") */);
+        cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
     }
 
     private void _MoveCamera()
     {
-        pitchRot -= cameraInput.y * sensitivity;
-        float yawRot = cameraInput.x * sensitivity;
-        transform.Rotate(0f, yawRot, 0f);
-        // transform.localRotation = Quaternion.Euler(pitchRot, 0f, 0f);
+        Vector3 yawOnlyOffset_wld;
+        {
+            _yawRot += cameraInput.x * sensitivity;
+            Quaternion wld_RotYawOnly_wld = Quaternion.Euler(0, _yawRot, 0);
+            yawOnlyOffset_wld = wld_RotYawOnly_wld * (Vector3.forward * radiusFromTarget);
+        }
 
-        Vector3 offset_wld = transform.TransformDirection(offsetFromTarget_cam);
-        transform.position = target.position + offset_wld;
+
+        float heightOffset;
+        {
+            heightOffset = Mathf.Lerp(heightToBotRing, heightToTopRing, cameraInput.y);
+            heightOffset = 0f;
+        }
+
+        Vector3 look_wld = yawOnlyOffset_wld;
+        look_wld.y = heightOffset;
+
+        transform.position = target.position - yawOnlyOffset_wld;
+        transform.rotation = Quaternion.LookRotation(look_wld.normalized, Vector3.up);
 
         if (poseableTarget != null)
         {
-            Vector3 look_wld = transform.forward;
             look_wld.y = 0;
             look_wld.Normalize();
             poseableTarget.SetLookDirection(look_wld);
