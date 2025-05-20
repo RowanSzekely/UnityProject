@@ -20,7 +20,7 @@ public class TextScript : MonoBehaviour
         if(playerHealth == null){
             playerHealth = player.GetComponent<Health>();
         }
-        int displayableHealth = playerHealth.intPlayerHealth();
+        int displayableHealth = playerHealth.CurrentHealth;
         if(playerHealth != null){
             cornerText.GetComponent<TMPro.TMP_Text>().text = "Health: " + displayableHealth;
         }

@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/Scenes/RigidBodyDownload.unity
     guid: 6ce00797a90e498429cb0f3d6f7647bb
   - enabled: 1
+    path: Assets/Scenes/PlayerSelection.unity
+    guid: 0294143d8ec485140b4abbf4268c1ec2
+  - enabled: 1
     path: Assets/Scenes/Lobby.unity
     guid: 6e02dc5963f7b0344a214c140b2a0a66
   m_configObjects:

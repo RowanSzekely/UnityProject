@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-public class ClickToPlay : MonoBehaviour
+public class ClickToPlayerSelection : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -14,7 +14,7 @@ public class ClickToPlay : MonoBehaviour
     void Update()
     {
         if(Input.GetMouseButtonDown(0)){
-            SceneManager.LoadScene("PlayGame");
+            SceneManager.LoadScene("PlayerSelection");
         }
     }
 }

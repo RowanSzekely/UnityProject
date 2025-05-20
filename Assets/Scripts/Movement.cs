@@ -1,7 +1,22 @@
+using Unity.Mathematics;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public class Movement : MonoBehaviour, ICameraPosable
 {
+    public struct InputData
+    {
+        public float forward;
+        public float right;
+        public bool jump;
+
+        public void Reset()
+        {
+            forward = 0;
+            right = 0;
+            jump = false;
+        }
+    }
+
     [SerializeField] private Rigidbody player;
     [SerializeField] private Transform playerCamera;
 
@@ -9,12 +24,11 @@ public class Movement : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private float sensitivity;
 
-    [SerializeField]
-    private bool isGrounded;
+    [SerializeField] private bool isGrounded;
 
-    private Vector3 moveInput;
+
+    private InputData inputData;
     private Vector2 cameraInput;
-
     private float xRot;
 
  
@@ -24,8 +38,10 @@ public class Movement : MonoBehaviour
     {
         GROUND_LAYERS = 1 << LayerMask.NameToLayer("Ground");
         Debug.Log("Ground Mask: " + GROUND_LAYERS
-        + "  \n  myLayer: " + gameObject.layer);   
+        + "  \n  myLayer: " + gameObject.layer);
         isGrounded = false;
+
+        inputData.Reset();
     }
 
     void OnCollisionStay(Collision collisionInfo){
@@ -35,38 +51,56 @@ public class Movement : MonoBehaviour
         }
     }
 
-    void OnCollisionExit(){
-        isGrounded = false;
+    void OnCollisionExit(Collision collisionInfo){
+        if(( GROUND_LAYERS & (1 << collisionInfo.collider.gameObject.layer)) == 0 )
+        {
+            isGrounded = false;
+        }
     }
 
+    void Update()
+    {
+        _CollectInput();
+    }
 
-
-    // Update is called once per frame
     void FixedUpdate()
     {
-       moveInput = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-       cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        _CollectInput();
+       _MovePlayer();
 
-       MovePlayer();
-       MoveCamera();
+       cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
     }
 
-    private void MovePlayer()
+    public void SetLookDirection(Vector3 forward_wld)
     {
-        Vector3 movementAmount = transform.TransformDirection(moveInput) * speed;
-        player.linearVelocity = new Vector3(movementAmount.x, player.linearVelocity.y, movementAmount.z);
+        transform.rotation = quaternion.LookRotation(forward_wld, Vector3.up);
+    }
 
-        if(Input.GetKeyDown(KeyCode.Space) && isGrounded){
-            player.AddForce(Vector3.up*jumpForce, ForceMode.Impulse);
+    private void _CollectInput()
+    {
+        inputData.forward = Input.GetAxis("Vertical");
+        inputData.right = Input.GetAxis("Horizontal");
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            inputData.jump = true;
+        }
+    }
+
+    private void _MovePlayer()
+    {
+        Vector3 moveRaw_playerfrm = new Vector3(inputData.right, 0f, inputData.forward);
+        Vector3 movementAmount_wld = transform.TransformDirection(moveRaw_playerfrm) * speed;
+        player.linearVelocity = new Vector3(movementAmount_wld.x, player.linearVelocity.y, movementAmount_wld.z);
+
+        if (inputData.jump)
+        {
+            Debug.Log("Jump " + Time.time);
+            player.AddForce(Vector3.up * jumpForce, ForceMode.Force);
             isGrounded = false;
         }
 
+        inputData.Reset();
     }
 
-    private void MoveCamera(){
-        xRot -= cameraInput.y * sensitivity;
-        transform.Rotate(0f, cameraInput.x * sensitivity, 0f);
-        playerCamera.transform.localRotation = Quaternion.Euler(xRot, 0f, 0f);
 
-    }
 }
