@@ -71,9 +71,11 @@ public class Movement : MonoBehaviour, ICameraPosable
        cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
     }
 
-    public void SetLookDirection(Vector3 forward_wld)
+    public void SetLookDirection(Vector3 newForward_wld)
     {
-        transform.rotation = quaternion.LookRotation(forward_wld, Vector3.up);
+        Vector3 currentLook_wld = transform.forward;
+        Vector3 f_wld = Vector3.Lerp(currentLook_wld, newForward_wld, .1f);
+        transform.rotation = quaternion.LookRotation(f_wld, Vector3.up);
     }
 
     private void _CollectInput()

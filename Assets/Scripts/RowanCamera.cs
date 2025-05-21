@@ -51,24 +51,20 @@ public class RowanCamera : MonoBehaviour
             yawOnlyOffset_wld = wld_RotYawOnly_wld * (Vector3.forward * radiusFromTarget);
         }
 
-
-        float heightOffset;
         {
-            heightOffset = Mathf.Lerp(heightToBotRing, heightToTopRing, cameraInput.y);
-            heightOffset = 0f;
+            _height += cameraInput.y * .01f * sensitivity;
+            _height = Mathf.Clamp(_height, heightToBotRing, heightToTopRing);
         }
 
         Vector3 look_wld = yawOnlyOffset_wld;
-        look_wld.y = heightOffset;
+        look_wld.y = _height;
 
-        transform.position = target.position - yawOnlyOffset_wld;
+        transform.position = target.position - look_wld;
         transform.rotation = Quaternion.LookRotation(look_wld.normalized, Vector3.up);
 
         if (poseableTarget != null)
         {
-            look_wld.y = 0;
-            look_wld.Normalize();
-            poseableTarget.SetLookDirection(look_wld);
+            poseableTarget.SetLookDirection(yawOnlyOffset_wld.normalized);
         }
 
     }
