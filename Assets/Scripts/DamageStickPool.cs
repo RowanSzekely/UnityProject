@@ -41,6 +41,7 @@ public class DamageStickPool : MonoBehaviour
         {
             PooledObject nextInstance = stack.Pop();
             nextInstance.gameObject.GetComponentInChildren<Renderer>().material.color = color;
+            nextInstance.gameObject.GetComponent<Transform>().rotation = Quaternion.identity;
             nextInstance.gameObject.SetActive(true);
             return nextInstance;
         }
@@ -48,7 +49,9 @@ public class DamageStickPool : MonoBehaviour
         {
             Vector3 randomSpawn = new Vector3(Random.Range(20,30), 40, Random.Range(-13, 13));
             PooledObject newInstance = Instantiate(damageStick, randomSpawn, Quaternion.identity);
+            newInstance.gameObject.GetComponent<Transform>().rotation = Quaternion.identity;
             newInstance.gameObject.GetComponentInChildren<Renderer>().material.color = color;
+
 
             newInstance.Pool = this;
 
