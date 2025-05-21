@@ -1,16 +1,20 @@
 using System.Collections;
+using System.Numerics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SpawnDamagers : MonoBehaviour
 {
+    [SerializeField] DamageStickPool damageStickPool;
     [SerializeField] GameObject player;
-    [SerializeField] GameObject damageStick;
 
-    int i = 1;
+    public Color red;
+    public Color pink;
 
 
-    
+
+
 
     void Start()
     {
@@ -20,23 +24,24 @@ public class SpawnDamagers : MonoBehaviour
 
 
 
-    private IEnumerator SpawnDelay(){
-        
-        
-        while(player.activeSelf == true){
-
-            Vector3 randomSpawn = new Vector3(Random.Range(20,30), 40, Random.Range(-13, 13));
-            
-
+    private IEnumerator SpawnDelay()
+    {
+        while (player.activeSelf == true)
+        {
             yield return new WaitForSeconds(4);
-            
-            var newObject = Instantiate(damageStick, randomSpawn, Quaternion.identity);
-
-            newObject.name = "DamageStick Copy #" + i;
-            i++;
-            
-
+            PooledObject instance = damageStickPool.GetFromPool(pink);
+            StartCoroutine(DeleteAfterTime(instance));
         }
+    }
+
+    private IEnumerator DeleteAfterTime(PooledObject returningStick)
+    {
+        yield return new WaitForSeconds(8);
+        Debug.Log("Should turn Red Now");
+        returningStick.gameObject.GetComponentInChildren<Renderer>().material.color = red;
+        yield return new WaitForSeconds(2);
+        damageStickPool.ReturnToPool(returningStick);
+         
     }
 
     

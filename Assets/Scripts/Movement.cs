@@ -41,6 +41,7 @@ public class Movement : MonoBehaviour, ICameraPosable
         + "  \n  myLayer: " + gameObject.layer);
         isGrounded = false;
 
+
         inputData.Reset();
     }
 
@@ -66,7 +67,7 @@ public class Movement : MonoBehaviour, ICameraPosable
     void FixedUpdate()
     {
         _CollectInput();
-       _MovePlayer();
+        _MovePlayer();
 
        cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
     }
